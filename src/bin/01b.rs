@@ -1,3 +1,6 @@
+// Copyright (c) 2023 Mikołaj Kuranowski
+// SPDX-License-Identifier: MIT
+
 use std::io::*;
 
 fn starts_with_digit(slice: &[u8]) -> Option<u8> {
