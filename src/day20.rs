@@ -46,7 +46,7 @@ pub trait Collector {
 }
 
 #[derive(Debug)]
-enum ModuleKind {
+pub enum ModuleKind {
     Noop,
     Broadcast,
     FlipFlop(bool),
@@ -61,9 +61,9 @@ impl Default for ModuleKind {
 
 #[derive(Debug)]
 pub struct Module {
-    id: ModuleID,
-    children: Vec<ModuleID>,
-    kind: ModuleKind,
+    pub id: ModuleID,
+    pub children: Vec<ModuleID>,
+    pub kind: ModuleKind,
 }
 
 impl Module {
@@ -106,6 +106,21 @@ impl Module {
         }
     }
 
+    pub fn reset(&mut self) {
+        match self.kind {
+            ModuleKind::Noop => {}
+            ModuleKind::Broadcast => {}
+            ModuleKind::FlipFlop(ref mut state) => {
+                *state = false;
+            }
+            ModuleKind::Conjunction(ref mut inputs) => {
+                for (_, v) in inputs.iter_mut() {
+                    *v = false;
+                }
+            }
+        }
+    }
+
     fn send_to_children<C: Collector>(
         &mut self,
         send_high: bool,
@@ -141,6 +156,12 @@ impl System {
         collector.on_click();
         collector.on_pulse(BROADCASTER_ID, BROADCASTER_ID, false);
         broadcast.send(false, &mut self.modules, collector);
+    }
+
+    pub fn reset(&mut self) {
+        for module in &mut self.modules {
+            module.reset();
+        }
     }
 }
 
