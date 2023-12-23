@@ -1,6 +1,8 @@
 // Copyright (c) 2023 Mikołaj Kuranowski
 // SPDX-License-Identifier: MIT
 
+use num::{BigUint, Zero};
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub struct SmallBitset(u128);
 
@@ -56,5 +58,34 @@ impl SmallBitset {
 
     pub fn is_superset(self, other: Self) -> bool {
         (self.0 & other.0) == other.0
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default)]
+pub struct BigBitset(BigUint);
+
+impl BigBitset {
+    pub fn len(&self) -> usize {
+        self.0.count_ones() as usize
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.0.is_zero()
+    }
+
+    pub fn clear(&mut self) {
+        self.0.set_zero();
+    }
+
+    pub fn contains(&self, i: u64) -> bool {
+        self.0.bit(i)
+    }
+
+    pub fn insert(&mut self, i: u64) {
+        self.0.set_bit(i, true);
+    }
+
+    pub fn remove(&mut self, i: u64) {
+        self.0.set_bit(i, false);
     }
 }
